@@ -1,5 +1,7 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+library bank_module;
+
+export 'src/coordinator/payment/payment_coordinator.dart';
+export 'src/coordinator/payment/routes.dart';
+export 'src/di.dart';
+export 'src/presentation/pages/payment/payment.dart';
+export 'src/entry_point.dart';
