@@ -1,13 +1,16 @@
-import 'package:bank_module/src/coordinator/payment/payment_coordinator.dart';
-import 'package:bank_module/src/di.dart';
 import 'package:flutter/material.dart';
 
 /// User classes do commons/core para evitar repetição e centralizar tratamentos de DI
 
 final class PaymentSuccessPage extends StatelessWidget {
   final String transactionId;
+  final VoidCallback? onFinish;
 
-  const PaymentSuccessPage({super.key, required this.transactionId});
+  const PaymentSuccessPage({
+    super.key,
+    required this.transactionId,
+    this.onFinish,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +29,7 @@ final class PaymentSuccessPage extends StatelessWidget {
             Text('Transação: $transactionId'),
             const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () =>
-                  paymentGetIt<PaymentCoordinator>().onPaymentFlowCompleted(),
+              onPressed: onFinish,
               child: const Text('Concluir'),
             ),
           ],

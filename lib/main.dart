@@ -1,6 +1,5 @@
 import 'package:bank_module/bank_module.dart';
 import 'package:flutter/material.dart';
-import 'package:payment_app/src/coordinator/payment_coordinator_impl.dart';
 import 'package:payment_app/src/router/app_router.dart';
 
 void main() {
@@ -8,8 +7,7 @@ void main() {
 
   final appRouter = AppRouter();
 
-  // Inicializa tudo (app + módulos)
-  setupApp(appRouter);
+
 
   runApp(MyApp(appRouter: appRouter));
 }
@@ -32,8 +30,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-void setupApp(AppRouter appRouter) {
-  final navigator = PaymentCoordinatorImpl(appRouter: appRouter);
-
-  setupPaymentModule(navigator: navigator);
-}

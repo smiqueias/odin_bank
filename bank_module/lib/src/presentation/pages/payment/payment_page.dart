@@ -1,3 +1,4 @@
+import 'package:bank_module/src/coordinator/payment/routes.dart';
 import 'package:bank_module/src/presentation/pages/payment/payment_cubit.dart';
 import 'package:bank_module/src/presentation/pages/payment/payment_state.dart';
 import 'package:flutter/material.dart';
@@ -5,19 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// User classes do commons/core para evitar repetição e centralizar tratamentos de DI
 
+
+
 final class PaymentHomePage extends StatelessWidget {
-  const PaymentHomePage({super.key});
+  /// Callback que o EntryPoint passa pra navegação interna.
+  final void Function(PaymentRoutes route) onNavigate;
+
+  const PaymentHomePage({super.key, required this.onNavigate});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pagamentos'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.read<PaymentCubit>().cancel(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Pagamentos')),
       body: BlocBuilder<PaymentCubit, PaymentState>(
         builder: (context, state) {
           if (state is PaymentLoading) {
@@ -33,9 +33,7 @@ final class PaymentHomePage extends StatelessWidget {
                   title: Text(payment['title']!),
                   subtitle: Text(payment['amount']!),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context
-                      .read<PaymentCubit>()
-                      .onPaymentTapped(payment['id']!),
+                  onTap: () => onNavigate(PaymentDetail(payment['id']!)),
                 );
               },
             );

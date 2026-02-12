@@ -1,4 +1,4 @@
-import 'package:bank_module/src/coordinator/payment/payment_coordinator.dart';
+import 'package:bank_module/bank_module.dart';
 import 'package:bank_module/src/di.dart';
 import 'package:bank_module/src/presentation/pages/payment/payment_cubit.dart';
 import 'package:bank_module/src/presentation/pages/payment/payment_state.dart';
@@ -6,25 +6,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// User classes do commons/core para evitar repetição e centralizar tratamentos de DI
-class PaymentDetailPage extends StatelessWidget {
+final class PaymentDetailPage extends StatelessWidget {
   final String paymentId;
+  final void Function(PaymentRoutes route) onNavigate;
+  final VoidCallback onBack;
 
-  const PaymentDetailPage({super.key, required this.paymentId});
+  const PaymentDetailPage({
+    super.key,
+    required this.paymentId,
+    required this.onNavigate,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => paymentGetIt<PaymentCubit>(),
-      child: Scaffold(
-        appBar: AppBar(title: Text('Detalhe #$paymentId')),
-        body: BlocConsumer<PaymentCubit, PaymentState>(
-          listener: (context, state) {
-            if (state is PaymentError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Detalhe #$paymentId'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: onBack,
+        ),
+      ),
+      body: BlocListener<PaymentCubit, PaymentState>(
+        listener: (context, state) {
+          if (state is PaymentCompleted) {
+            onNavigate(PaymentSuccess(state.transactionId));
+          }
+        },
+        child: BlocBuilder<PaymentCubit, PaymentState>(
           builder: (context, state) {
             if (state is PaymentProcessing) {
               return const Center(
@@ -49,15 +59,13 @@ class PaymentDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
-                    onPressed: () => context
-                        .read<PaymentCubit>()
-                        .processPayment(paymentId),
+                    onPressed: () =>
+                        context.read<PaymentCubit>().processPayment(paymentId),
                     child: const Text('Confirmar Pagamento'),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
-                    onPressed: () =>
-                        paymentGetIt<PaymentCoordinator>().pop(),
+                    onPressed: onBack,
                     child: const Text('Voltar'),
                   ),
                 ],

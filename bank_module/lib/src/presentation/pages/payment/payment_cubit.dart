@@ -1,16 +1,14 @@
-import 'package:bank_module/src/coordinator/payment/payment_coordinator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'payment_state.dart';
 
-/// Puxa abstração do commons
-final class PaymentCubit extends Cubit<PaymentState> {
-  final PaymentCoordinator _coordinator;
-
-  PaymentCubit(this._coordinator) : super(PaymentInitial());
+/// Usar abstração do commons
+class PaymentCubit extends Cubit<PaymentState> {
+  PaymentCubit() : super(PaymentInitial()) {
+    loadPayments();
+  }
 
   Future<void> loadPayments() async {
     emit(PaymentLoading());
-
     await Future.delayed(const Duration(seconds: 1));
 
     emit(const PaymentLoaded([
@@ -20,26 +18,9 @@ final class PaymentCubit extends Cubit<PaymentState> {
     ]));
   }
 
-  void onPaymentTapped(String paymentId) {
-    _coordinator.openPaymentDetail(paymentId);
-  }
-
   Future<void> processPayment(String paymentId) async {
     emit(PaymentProcessing());
-
     await Future.delayed(const Duration(seconds: 2));
-
-    const transactionId = 'TXN-ABC-123';
-    emit(const PaymentCompleted(transactionId));
-
-    _coordinator.openPaymentSuccess(transactionId);
-  }
-
-  void cancel() {
-    _coordinator.onPaymentFlowCancelled();
-  }
-
-  void finish() {
-    _coordinator.onPaymentFlowCompleted();
+    emit(const PaymentCompleted('TXN-ABC-123'));
   }
 }

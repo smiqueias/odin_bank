@@ -15,27 +15,23 @@ final class AppRouter {
           builder: (context, state) => const HomePage(),
         ),
 
-        // ========== ROTAS DO MÓDULO DE PAGAMENTO ==========
-        // O host registra as páginas do módulo no SEU router.
-        // O módulo fornece os widgets; o host controla a navegação.
-        GoRoute(
-          path: PaymentRoutes.homePath,
-          builder: (context, state) => const PaymentEntryPoint(),
-        ),
-        GoRoute(
-          path: '${PaymentRoutes.detailPath}/:id',
-          builder: (context, state) {
-            final id = state.pathParameters['id']!;
-            return PaymentDetailPage(paymentId: id);
-          },
-        ),
-        GoRoute(
-          path: '${PaymentRoutes.successPath}/:transactionId',
-          builder: (context, state) {
-            final txnId = state.pathParameters['transactionId']!;
-            return PaymentSuccessPage(transactionId: txnId);
-          },
-        ),
+
+        /// Caso precise de deeplink, registramos o entry point desejado no app host ou tratamento do modo que quisermos pois
+        // GoRoute(
+        //   path: '/payment',
+        //   builder: (_, __) => PaymentEntryPoint(
+        //     onFlowFinished: () => router.go('/home'),
+        //   ),
+        // ),
+        //
+        // GoRoute(
+        //   path: '/payment/:id',
+        //   builder: (_, state) => PaymentEntryPoint(
+        //     initialRoute: PaymentDetail(state.pathParameters['id']!),
+        //     onFlowFinished: () => router.go('/home'),
+        //   ),
+        // )
+
       ],
     );
   }
@@ -51,7 +47,17 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Meu App')),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => GoRouter.of(context).go(PaymentRoutes.homePath),
+          /// Se quiser registrar no go_router
+          // onPressed: () => GoRouter.of(context).go(PaymentRoutes.homePath),
+          /// Navegação default
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PaymentEntryPoint(
+              onFlowFinished: () {
+                Navigator.pop(context);
+              },
+            ),),
+          ),
           child: const Text('Ir para Pagamentos'),
         ),
       ),
